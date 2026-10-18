@@ -1,0 +1,10 @@
+{
+  "name": "agentflow-adapters",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Platform adapters for the cross-platform AI agent workflow (OpenCode v2, Cursor).",
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\""
+  }
+}

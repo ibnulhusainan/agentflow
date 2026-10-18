@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-16T09:10:00Z",
+  "entries": [
+    {
+      "id": "k-repo-structure",
+      "path": ".agent/knowledge/facts/repo.json",
+      "type": "facts",
+      "scope": ["tools/**", "package.json"],
+      "depends_on": [],
+      "owner": "analyzer",
+      "revision": { "git_commit": null, "content_hash": "sha256:9f2a...c1" },
+      "status": "fresh",
+      "last_validated": "2026-10-16T09:10:00Z",
+      "summary": "Agentflow CLI layout and module map"
+    },
+    {
+      "id": "n-cli",
+      "path": ".agent/knowledge/notes/n-cli.md",
+      "type": "analysis",
+      "scope": [".agentflow/cli.mjs", ".agentflow/lib/**"],
+      "depends_on": ["k-repo-structure"],
+      "owner": "analyzer",
+      "revision": { "git_commit": null, "content_hash": "sha256:7b10...aa" },
+      "status": "fresh",
+      "last_validated": "2026-10-16T09:12:00Z",
+      "summary": "How the CLI parses commands and dispatches to lib/"
+    }
+  ]
+}

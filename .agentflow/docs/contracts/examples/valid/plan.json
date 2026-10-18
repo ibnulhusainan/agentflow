@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "T-20261016-001",
+  "status": "approved",
+  "created_at": "2026-10-16T09:00:00Z",
+  "approved_at": "2026-10-16T09:05:00Z",
+  "scope": [".agentflow/cli.mjs", ".agentflow/lib/**"],
+  "knowledge_refs": [".agent/knowledge/notes/n-cli.md#Verified facts"],
+  "acceptance_criteria": ["AC1.1 dry-run prints targets and exits 0", "AC1.2 no writes under .agent/ in dry-run"],
+  "verification": ["node --test .agentflow/test"],
+  "items": [
+    {
+      "id": "P1",
+      "title": "Thread a dryRun option through writers",
+      "description": "Add dryRun param to fsutil write helpers; when true, return intended path instead of writing.",
+      "paths": [".agentflow/lib/fsutil.mjs"],
+      "knowledge_refs": [],
+      "depends_on": [],
+      "completion_criterion": "unit test asserts no fs write occurs when dryRun=true",
+      "status": "done"
+    },
+    {
+      "id": "P2",
+      "title": "Wire --dry-run flag in CLI",
+      "description": "Parse --dry-run and pass through; print target paths.",
+      "paths": [".agentflow/cli.mjs"],
+      "knowledge_refs": [".agent/knowledge/notes/n-cli.md#Verified facts"],
+      "depends_on": ["P1"],
+      "completion_criterion": "cli --dry-run on a sample repo prints >=1 path and exits 0",
+      "status": "todo"
+    }
+  ]
+}

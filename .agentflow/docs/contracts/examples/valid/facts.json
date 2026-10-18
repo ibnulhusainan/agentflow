@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "kind": "facts",
+  "id": "k-repo-structure",
+  "generated_at": "2026-10-16T09:10:00Z",
+  "generator": "agentflow facts",
+  "source_revision": { "git_commit": null, "content_hash": "sha256:9f2a...c1" },
+  "scope": ["tools/**", "package.json"],
+  "data": {
+    "top_level": ["docs", "tools", "tasks"],
+    "modules": [
+      { "path": ".agentflow/cli.mjs", "type": "cli-entry" },
+      { "path": ".agentflow/lib", "type": "library" }
+    ],
+    "manifests": [{ "path": "package.json", "present": true }]
+  }
+}

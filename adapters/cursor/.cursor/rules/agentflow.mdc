@@ -1,0 +1,67 @@
+---
+description: "agentflow workflow: role boundaries, artifact handoffs, and the platform-independent core"
+alwaysApply: true
+---
+
+# agentflow workflow (Cursor)
+
+This project uses a token-efficient, persistent agent workflow. The
+**deterministic** parts — knowledge freshness, validation, lifecycle
+transitions, closure gates, and retry/spawn limits — live in a
+platform-independent core, not in prompts:
+
+```
+node .agentflow/cli.mjs <command>
+```
+
+Never duplicate that logic in chat. Always call the core and read `.agent/`.
+
+## Roles
+
+| Role | Owns | Read-only? |
+|------|------|-----------|
+| Conductor | lifecycle, delegation (this primary session) | no edits |
+| Analyzer | `.agent/knowledge/` | no source edits |
+| Planner | `.agent/tasks/<id>/plan.json` | plan only |
+| Executor | implementation, `progress.json`, `result.json` | no knowledge/plan edits |
+| Reviewer | verification findings, `discrepancies.json` | read-only |
+| Consultant | recommendations | read-only |
+
+Subagents are defined in `.cursor/agents/`. Invoke them with `/analyzer`,
+`/planner`, `/executor`, `/reviewer`, `/consultant`. Full contracts:
+`.agentflow/docs/agents/`. Shared rules: `.agentflow/docs/agents/README.md`.
+
+## Conductor behaviour (default)
+
+1. Select the active task and check knowledge readiness:
+   `node .agentflow/cli.mjs status --json`.
+2. Delegate to **one** role at a time. Never spawn unbounded trees; the project
+   core enforces persisted spawn limits and Cursor enforces a nesting limit.
+3. Enforce transitions with the core:
+   `node .agentflow/cli.mjs transition --task <id> --to <status>`.
+4. Verify closure before completion:
+   `node .agentflow/cli.mjs close --task <id> --json`. If it fails, report
+   the gate reasons; never force the transition.
+5. Stop and ask the user at approval boundaries: architecture change, scope
+   change, destructive/external operation, unmet acceptance criteria.
+
+## Shared rules (all roles)
+
+- **Read the index first.** Trust `fresh` knowledge and `approved` plans; never
+  rescan the repository for something already recorded as `fresh`.
+- **Artifacts are the handoff.** Chat carries a task ID, artifact `path#Heading`
+  references, the next action, and blocker IDs — nothing more.
+- **Independent verification.** Do not accept claims at face value; re-run the
+  declared commands and record observed results. Never fabricate results.
+- **Reference as `path#Heading`**, never line numbers.
+- **Do not store secrets** or copy large source excerpts into artifacts.
+- **Do not bypass a deterministic gate.** If blocked by something outside your
+  authority, stop and report instead of guessing.
+
+## Shell boundaries
+
+`.cursor/hooks.json` registers a guard (`beforeShellExecution`) that denies
+privilege escalation, broad recursive deletion, `git push`, destructive git
+resets, publish, and download-piped-to-shell; other commands (core CLI, git
+inspection, tests, read-only tools) are allowed, and installs/network/containers
+require approval. Run the core via the exact path `.agentflow/cli.mjs`.

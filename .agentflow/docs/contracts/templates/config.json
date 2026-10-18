@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "state_root": ".agent",
+  "small_task": {
+    "max_files": 3,
+    "max_changed_lines": 200,
+    "forbid_cross_module": true,
+    "forbid_contract_change": true
+  },
+  "limits": {
+    "max_attempts": 3,
+    "max_spawn_depth": 1,
+    "max_children": 0
+  },
+  "verify": {
+    "commands": ["<your focused test command>"]
+  },
+  "budget": {
+    "max_requests_per_item": 25,
+    "max_input_tokens_per_item": 60000,
+    "max_output_tokens_per_item": 25000,
+    "warn_ratio": 0.8,
+    "enforce_on_close": true
+  },
+  "context": {
+    "max_context_tokens": 60000,
+    "compact_at_percent": 70
+  },
+  "exclude": [
+    "node_modules/**",
+    "dist/**",
+    ".git/**",
+    ".agent/**",
+    ".agentflow-backup/**",
+    ".opencode/**",
+    ".cursor/**",
+    "opencode.jsonc"
+  ]
+}

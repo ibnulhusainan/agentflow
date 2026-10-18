@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "T-20261016-002",
+  "reopened_from": null,
+  "status": "completed",
+  "size": "small",
+  "plan_required": false,
+  "created_at": "2026-10-16T09:00:00Z",
+  "updated_at": "2026-10-16T09:30:00Z",
+  "history": [
+    { "at": "2026-10-16T09:00:00Z", "from": null, "to": "pending", "by": "conductor", "note": "created" },
+    { "at": "2026-10-16T09:30:00Z", "from": "pending", "to": "completed", "by": "conductor", "note": "skipped review" }
+  ],
+  "counters": {
+    "attempts_total": 0,
+    "max_attempts": 3,
+    "spawn_depth": 0,
+    "max_spawn_depth": 1,
+    "children": 0,
+    "max_children": 0
+  }
+}

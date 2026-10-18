@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "T-yyyymmdd-nnn",
+  "status": "draft",
+  "created_at": "<ISO-8601 UTC>",
+  "approved_at": null,
+  "scope": ["<path/glob>"],
+  "knowledge_refs": [".agent/knowledge/notes/n-example.md#Scope"],
+  "acceptance_criteria": ["<testable criterion>"],
+  "verification": ["<focused test command>"],
+  "items": [
+    {
+      "id": "P1",
+      "title": "<short title>",
+      "description": "<what to do>",
+      "paths": ["<path>"],
+      "knowledge_refs": [],
+      "depends_on": [],
+      "completion_criterion": "<command or observable outcome>",
+      "status": "todo"
+    }
+  ]
+}

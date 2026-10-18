@@ -1,0 +1,1102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/agentflow/agentflow.schema.json",
+  "title": "AgentFlow Artifact Contracts",
+  "description": "Platform-independent schemas for the cross-platform AI agent workflow. schema_version=1.",
+  "$defs": {
+    "IsoTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO-8601 UTC timestamp, e.g. 2026-10-16T08:30:00Z"
+    },
+    "PathRef": {
+      "type": "string",
+      "description": "Repo-relative path or glob; no absolute paths.",
+      "minLength": 1
+    },
+    "KnowledgeRef": {
+      "type": "string",
+      "description": "Heading reference '<path>#<Heading>'. No line numbers.",
+      "pattern": "^[^#]+#[^#]+$",
+      "minLength": 3
+    },
+    "PlanItemStatus": {
+      "enum": [
+        "todo",
+        "in_progress",
+        "done",
+        "blocked",
+        "skipped"
+      ]
+    },
+    "TaskStatus": {
+      "enum": [
+        "pending",
+        "in_progress",
+        "blocked",
+        "review",
+        "completed",
+        "reopened"
+      ]
+    },
+    "KnowledgeStatus": {
+      "enum": [
+        "missing",
+        "fresh",
+        "stale",
+        "incomplete",
+        "invalid"
+      ]
+    },
+    "Severity": {
+      "enum": [
+        "blocker",
+        "major",
+        "minor",
+        "info"
+      ]
+    },
+    "DiscrepancyType": {
+      "enum": [
+        "knowledge",
+        "plan",
+        "implementation",
+        "environment"
+      ]
+    },
+    "Revision": {
+      "type": "object",
+      "required": [
+        "content_hash"
+      ],
+      "properties": {
+        "git_commit": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "content_hash": {
+          "type": "string",
+          "description": "e.g. sha256:..."
+        }
+      },
+      "additionalProperties": false
+    },
+    "Config": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "small_task",
+        "limits",
+        "verify"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "state_root": {
+          "type": "string",
+          "default": ".agent"
+        },
+        "small_task": {
+          "type": "object",
+          "required": [
+            "max_files"
+          ],
+          "properties": {
+            "max_files": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 3
+            },
+            "max_changed_lines": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 200
+            },
+            "forbid_cross_module": {
+              "type": "boolean",
+              "default": true
+            },
+            "forbid_contract_change": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "limits": {
+          "type": "object",
+          "required": [
+            "max_attempts",
+            "max_spawn_depth",
+            "max_children"
+          ],
+          "properties": {
+            "max_attempts": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 3
+            },
+            "max_spawn_depth": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 1
+            },
+            "max_children": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "verify": {
+          "type": "object",
+          "properties": {
+            "commands": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "exclude": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "budget": {
+          "type": "object",
+          "properties": {
+            "max_requests_per_item": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 25
+            },
+            "max_input_tokens_per_item": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 60000
+            },
+            "max_output_tokens_per_item": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 25000
+            },
+            "warn_ratio": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.8
+            },
+            "enforce_on_close": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          "additionalProperties": false,
+          "description": "Per-item ceilings enforced by `usage check` and the close gate."
+        },
+        "context": {
+          "type": "object",
+          "properties": {
+            "max_context_tokens": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 60000
+            },
+            "compact_at_percent": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 70
+            }
+          },
+          "additionalProperties": false,
+          "description": "Advisory resume-context limits used by `context`/`usage check`."
+        },
+        "facts": {
+          "type": "object",
+          "description": "Per-kind fact-generator settings, keyed by kind (repo-structure, inventory, imports, routes, schema, verify-state). Each kind accepts enabled, id, scope and kind-specific options (role_patterns, signals, extractors, ...); see .agentflow/README.md.",
+          "additionalProperties": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "KnowledgeEntry": {
+      "type": "object",
+      "required": [
+        "id",
+        "path",
+        "type",
+        "scope",
+        "owner",
+        "status",
+        "revision",
+        "last_validated"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^(k|n)-[a-z0-9-]+$"
+        },
+        "path": {
+          "$ref": "#/$defs/PathRef"
+        },
+        "type": {
+          "enum": [
+            "facts",
+            "analysis"
+          ]
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathRef"
+          },
+          "minItems": 1
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        },
+        "owner": {
+          "const": "analyzer"
+        },
+        "revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "status": {
+          "$ref": "#/$defs/KnowledgeStatus"
+        },
+        "last_validated": {
+          "$ref": "#/$defs/IsoTimestamp"
+        },
+        "summary": {
+          "type": "string",
+          "maxLength": 300
+        }
+      },
+      "additionalProperties": false
+    },
+    "KnowledgeIndex": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "generated_at",
+        "entries"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "generated_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/KnowledgeEntry"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "FactsDoc": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "kind",
+        "id",
+        "generated_at",
+        "generator",
+        "source_revision",
+        "scope",
+        "data"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "facts"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^k-[a-z0-9-]+$"
+        },
+        "generated_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        },
+        "generator": {
+          "type": "string"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/Revision"
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathRef"
+          },
+          "minItems": 1
+        },
+        "data": {
+          "type": "object",
+          "description": "Deterministic structured facts only."
+        }
+      },
+      "additionalProperties": false
+    },
+    "PlanItem": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "description",
+        "paths",
+        "knowledge_refs",
+        "depends_on",
+        "completion_criterion",
+        "status"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^P[0-9]+(\\.[0-9]+)*$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "paths": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathRef"
+          }
+        },
+        "knowledge_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/KnowledgeRef"
+          }
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^P[0-9]+(\\.[0-9]+)*$"
+          }
+        },
+        "completion_criterion": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Testable; names a command or observable outcome."
+        },
+        "status": {
+          "$ref": "#/$defs/PlanItemStatus"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Plan": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "task_id",
+        "status",
+        "created_at",
+        "scope",
+        "knowledge_refs",
+        "acceptance_criteria",
+        "verification",
+        "items"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T-[0-9]{8}-[0-9]{3}$"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "approved",
+            "superseded"
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        },
+        "approved_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathRef"
+          }
+        },
+        "knowledge_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/KnowledgeRef"
+          }
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "verification": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PlanItem"
+          },
+          "minItems": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "ProgressItem": {
+      "type": "object",
+      "required": [
+        "status",
+        "attempts",
+        "updated_at"
+      ],
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/PlanItemStatus"
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "evidence": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "updated_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        },
+        "justification": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "additionalProperties": false
+    },
+    "NextAction": {
+      "type": "object",
+      "required": [
+        "item_id",
+        "action"
+      ],
+      "properties": {
+        "item_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^P[0-9]+(\\.[0-9]+)*$"
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Concrete, self-contained next step."
+        },
+        "blocked_by": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": []
+        }
+      },
+      "additionalProperties": false
+    },
+    "Progress": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "task_id",
+        "updated_at",
+        "items",
+        "next_action"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T-[0-9]{8}-[0-9]{3}$"
+        },
+        "plan_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "updated_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        },
+        "items": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ProgressItem"
+          }
+        },
+        "next_action": {
+          "$ref": "#/$defs/NextAction"
+        }
+      },
+      "additionalProperties": false
+    },
+    "HistoryEvent": {
+      "type": "object",
+      "required": [
+        "at",
+        "to",
+        "by"
+      ],
+      "properties": {
+        "at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        },
+        "from": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "to": {
+          "$ref": "#/$defs/TaskStatus"
+        },
+        "by": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 300
+        }
+      },
+      "additionalProperties": false
+    },
+    "Counters": {
+      "type": "object",
+      "required": [
+        "attempts_total",
+        "max_attempts",
+        "spawn_depth",
+        "max_spawn_depth",
+        "children",
+        "max_children"
+      ],
+      "properties": {
+        "attempts_total": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "spawn_depth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_spawn_depth": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "children": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "max_children": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "State": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "task_id",
+        "status",
+        "size",
+        "plan_required",
+        "created_at",
+        "updated_at",
+        "history",
+        "counters"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T-[0-9]{8}-[0-9]{3}$"
+        },
+        "reopened_from": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "status": {
+          "$ref": "#/$defs/TaskStatus"
+        },
+        "size": {
+          "enum": [
+            "small",
+            "medium",
+            "complex"
+          ]
+        },
+        "plan_required": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        },
+        "updated_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        },
+        "history": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HistoryEvent"
+          }
+        },
+        "counters": {
+          "$ref": "#/$defs/Counters"
+        },
+        "verification": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            },
+            "passed": {
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "closure_check": {
+          "type": "object",
+          "properties": {
+            "last_checked": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "passed": {
+              "type": "boolean"
+            },
+            "reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "Discrepancy": {
+      "type": "object",
+      "required": [
+        "id",
+        "severity",
+        "type",
+        "summary",
+        "evidence",
+        "affected",
+        "status",
+        "created_at"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^D[0-9]+$"
+        },
+        "severity": {
+          "$ref": "#/$defs/Severity"
+        },
+        "type": {
+          "$ref": "#/$defs/DiscrepancyType"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Concrete, reproducible evidence (command + observed result)."
+        },
+        "affected": {
+          "type": "object",
+          "required": [
+            "paths",
+            "knowledge_refs",
+            "plan_items"
+          ],
+          "properties": {
+            "paths": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/PathRef"
+              }
+            },
+            "knowledge_refs": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/KnowledgeRef"
+              }
+            },
+            "plan_items": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "status": {
+          "enum": [
+            "open",
+            "resolved",
+            "wontfix"
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        },
+        "resolved_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "resolution": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "DiscrepancyList": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "task_id",
+        "items"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T-[0-9]{8}-[0-9]{3}$"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Discrepancy"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "VerificationCommand": {
+      "type": "object",
+      "required": [
+        "cmd",
+        "exit_code",
+        "result"
+      ],
+      "properties": {
+        "cmd": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exit_code": {
+          "type": "integer"
+        },
+        "result": {
+          "enum": [
+            "pass",
+            "fail",
+            "error"
+          ]
+        },
+        "output_summary": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "additionalProperties": false
+    },
+    "AcceptanceResult": {
+      "type": "object",
+      "required": [
+        "id",
+        "met",
+        "evidence"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "met": {
+          "type": "boolean"
+        },
+        "evidence": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        }
+      },
+      "additionalProperties": false
+    },
+    "Result": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "task_id",
+        "status",
+        "summary",
+        "changed_files",
+        "verification",
+        "acceptance_criteria",
+        "limitations",
+        "completed_at"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T-[0-9]{8}-[0-9]{3}$"
+        },
+        "status": {
+          "enum": [
+            "completed",
+            "reopened"
+          ]
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "changed_files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PathRef"
+          }
+        },
+        "knowledge_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/KnowledgeRef"
+          }
+        },
+        "verification": {
+          "type": "object",
+          "required": [
+            "commands",
+            "passed",
+            "performed_at"
+          ],
+          "properties": {
+            "commands": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/VerificationCommand"
+              }
+            },
+            "passed": {
+              "type": "boolean"
+            },
+            "performed_at": {
+              "$ref": "#/$defs/IsoTimestamp"
+            }
+          },
+          "additionalProperties": false
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AcceptanceResult"
+          },
+          "minItems": 1
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "follow_ups": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "completed_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Usage": {
+      "type": "object",
+      "required": [
+        "schema_version",
+        "kind",
+        "task_id",
+        "updated_at",
+        "items",
+        "totals"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "kind": {
+          "const": "usage"
+        },
+        "task_id": {
+          "type": "string",
+          "pattern": "^T-[0-9]{8}-[0-9]{3}$"
+        },
+        "updated_at": {
+          "$ref": "#/$defs/IsoTimestamp"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "item_id",
+              "requests",
+              "input_tokens",
+              "output_tokens"
+            ],
+            "properties": {
+              "item_id": {
+                "type": "string",
+                "pattern": "^P[0-9]+(\\.[0-9]+)*$"
+              },
+              "requests": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "input_tokens": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "output_tokens": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "cache_read_tokens": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "note": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 300
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "totals": {
+          "type": "object",
+          "required": [
+            "requests",
+            "input_tokens",
+            "output_tokens",
+            "cache_read_tokens"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "requests": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "input_tokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "output_tokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "cache_read_tokens": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      },
+      "additionalProperties": false,
+      "description": "Self-reported token/request usage per plan item; hard-checked against config.budget."
+    }
+  }
+}

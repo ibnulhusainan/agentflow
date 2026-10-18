@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "task_id": "T-yyyymmdd-nnn",
+  "items": [
+    {
+      "id": "D1",
+      "severity": "major",
+      "type": "knowledge",
+      "summary": "<what contradicts>",
+      "evidence": "<command + observed result>",
+      "affected": { "paths": [], "knowledge_refs": [], "plan_items": [] },
+      "status": "open",
+      "created_at": "<ISO-8601 UTC>",
+      "resolved_at": null,
+      "resolution": null
+    }
+  ]
+}

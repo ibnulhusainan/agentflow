@@ -1,0 +1,184 @@
+{
+  "version": 2,
+  "client_max_retention_days": 0,
+  "adapters": {
+    "opencode": {
+      "roles": {
+        "conductor": {
+          "paid": ["opencode-go/gpt-6-luna", "opencode-go/longcat-2.0"],
+          "free": ["opencode/big-pickle", "opencode/longcat-2.0-free"],
+          "on_exhausted": "break"
+        },
+        "consultant": {
+          "paid": ["opencode-go/gpt-6-luna", "opencode-go/longcat-2.0"],
+          "free": ["opencode/big-pickle", "opencode/longcat-2.0-free"],
+          "on_exhausted": "break"
+        },
+        "analyzer": {
+          "paid": ["opencode-go/deepseek-v4.1-flash", "opencode-go/mimo-v2.6-flash"],
+          "free": ["opencode/deepseek-v4.1-flash-free", "opencode/mimo-v2.6-flash-free"],
+          "on_exhausted": "break"
+        },
+        "planner": {
+          "paid": ["opencode-go/deepseek-v4.1-flash", "opencode-go/glm-5.2"],
+          "free": ["opencode/deepseek-v4.1-flash-free", "opencode/big-pickle"],
+          "on_exhausted": "break"
+        },
+        "executor": {
+          "paid": ["opencode-go/deepseek-v4.1-flash", "opencode-go/mimo-v2.6-flash", "opencode-go/mimo-v2.5"],
+          "free": ["opencode/deepseek-v4.1-flash-free", "opencode/mimo-v2.6-flash-free", "opencode/minimax-m3-free"],
+          "on_exhausted": "break"
+        },
+        "reviewer": {
+          "paid": ["opencode-go/glm-5.3-flash", "opencode-go/hy3"],
+          "free": ["opencode/big-pickle", "opencode/deepseek-v4.1-flash-free"],
+          "on_exhausted": "break"
+        }
+      }
+    },
+    "cursor": {
+      "roles": {
+        "conductor": {
+          "paid": ["composer-2.5", "grok-4.7-low"],
+          "free": [],
+          "on_exhausted": "break"
+        },
+        "consultant": {
+          "paid": ["composer-2.5", "grok-4.7-low"],
+          "free": [],
+          "on_exhausted": "break"
+        },
+        "analyzer": {
+          "paid": ["gemini-3.8-flash-medium", "composer-2.5"],
+          "free": [],
+          "on_exhausted": "break"
+        },
+        "planner": {
+          "paid": ["grok-4.7-medium", "cursor-grok-4.6-medium", "composer-2.5"],
+          "free": [],
+          "on_exhausted": "break"
+        },
+        "executor": {
+          "paid": ["composer-2.5", "grok-4.7-low"],
+          "free": [],
+          "on_exhausted": "break"
+        },
+        "reviewer": {
+          "paid": ["gemini-3.8-flash-medium", "grok-4.7-medium"],
+          "free": [],
+          "on_exhausted": "break"
+        }
+      }
+    }
+  },
+  "models": {
+    "opencode-go/gpt-6-luna": {
+      "trains_on_data": false,
+      "retention_days": 30,
+      "temporary": false,
+      "notes": "Go: no training; abuse-monitoring logs retained up to 30 days."
+    },
+    "opencode-go/longcat-2.0": {
+      "trains_on_data": false,
+      "retention_days": 0,
+      "temporary": false,
+      "notes": "Go: no training; 0-day retention."
+    },
+    "opencode-go/deepseek-v4.1-flash": {
+      "trains_on_data": false,
+      "retention_days": 0,
+      "temporary": false,
+      "notes": "Go: no training; ZDR renewed monthly, current agreement valid through 2026-10-31."
+    },
+    "opencode-go/mimo-v2.6-flash": {
+      "trains_on_data": false,
+      "retention_days": 0,
+      "temporary": false,
+      "notes": "Go: no training; 0-day retention."
+    },
+    "opencode-go/mimo-v2.5": {
+      "trains_on_data": false,
+      "retention_days": 0,
+      "temporary": false,
+      "notes": "Go: no training; 0-day retention."
+    },
+    "opencode-go/glm-5.2": {
+      "trains_on_data": false,
+      "retention_days": 0,
+      "temporary": false,
+      "notes": "Go: no training; 0-day retention."
+    },
+    "opencode-go/glm-5.3-flash": {
+      "trains_on_data": false,
+      "retention_days": 0,
+      "temporary": false,
+      "notes": "Go: no training; 0-day retention."
+    },
+    "opencode-go/hy3": {
+      "trains_on_data": false,
+      "retention_days": 0,
+      "temporary": false,
+      "notes": "Go: no training; 0-day retention."
+    },
+    "opencode/big-pickle": {
+      "trains_on_data": true,
+      "retention_days": null,
+      "temporary": true,
+      "notes": "Zen free stealth model; data may be used to improve it during the free period."
+    },
+    "opencode/longcat-2.0-free": {
+      "trains_on_data": null,
+      "retention_days": null,
+      "temporary": true,
+      "notes": "Zen free; privacy terms not documented here — treat as unknown (fail-closed in client mode)."
+    },
+    "opencode/deepseek-v4.1-flash-free": {
+      "trains_on_data": false,
+      "retention_days": null,
+      "temporary": true,
+      "notes": "Zen free; no training, retention not documented — treat as unknown."
+    },
+    "opencode/mimo-v2.6-flash-free": {
+      "trains_on_data": true,
+      "retention_days": null,
+      "temporary": true,
+      "notes": "Zen free; data may be used to improve the model during the free period."
+    },
+    "opencode/minimax-m3-free": {
+      "trains_on_data": null,
+      "retention_days": null,
+      "temporary": true,
+      "notes": "Zen free; privacy terms not documented here — treat as unknown."
+    },
+    "composer-2.5": {
+      "trains_on_data": false,
+      "retention_days": 0,
+      "temporary": false,
+      "notes": "Cursor first-party (weekly pool). Docs model id composer-2.5; standard $0.5/$2.5 per 1M, Fast variant $3/$15. Requires Privacy Mode ON: no training, ZDR. Abuse classifiers may store flagged data."
+    },
+    "grok-4.7-low": {
+      "trains_on_data": false,
+      "retention_days": 0,
+      "temporary": false,
+      "notes": "Cursor pool. Docs model id grok-4.7, effort low. Requires Privacy Mode ON: no training, ZDR with xAI. Abuse classifiers may store flagged data. On Plus, fixed at medium effort."
+    },
+    "grok-4.7-medium": {
+      "trains_on_data": false,
+      "retention_days": 0,
+      "temporary": false,
+      "notes": "Cursor pool. Docs model id grok-4.7, effort medium. Requires Privacy Mode ON: no training, ZDR with xAI. Abuse classifiers may store flagged data."
+    },
+    "cursor-grok-4.6-medium": {
+      "trains_on_data": false,
+      "retention_days": 0,
+      "temporary": false,
+      "notes": "Cursor pool. Grok 4.6, effort medium. Requires Privacy Mode ON: no training, ZDR with xAI. Abuse classifiers may store flagged data."
+    },
+    "gemini-3.8-flash-medium": {
+      "trains_on_data": false,
+      "retention_days": 0,
+      "temporary": false,
+      "notes": "Third-party via Cursor (prepaid credit, Premium+; legacy plans: Other Models pool). Docs model id gemini-3.8-flash, effort medium, 1M context, $0.75/$3.75 per 1M. Requires Privacy Mode ON: ZDR with Google Vertex AI. Abuse classifiers may store flagged data."
+    }
+  }
+}

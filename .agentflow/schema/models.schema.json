@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/agentflow/models.schema.json",
+  "title": "AgentFlow Model Chains",
+  "description": "Per-role model fallback chains, split into a paid OpenCode Go tier and a free OpenCode (Zen) tier. schema_version=2.",
+  "type": "object",
+  "required": ["version", "adapters"],
+  "properties": {
+    "version": { "const": 2 },
+    "client_max_retention_days": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Explicit retention ceiling used only in client mode. Must be set for `models check --client` (fail-closed)."
+    },
+    "adapters": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "roles": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "go": {
+                  "type": "array",
+                  "items": { "type": "string", "pattern": "^opencode-go/" },
+                  "description": "OpenCode Go models, tried in order before `free`. Each draws down the Go allowance."
+                },
+                "free": {
+                  "type": "array",
+                  "items": { "type": "string", "pattern": "^opencode/" },
+                  "description": "Free OpenCode (Zen) models, tried after the Go tier is exhausted. Do not count toward the Go allowance."
+                },
+                "on_exhausted": { "type": "string", "enum": ["break"] }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "models": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "trains_on_data": { "type": ["boolean", "null"] },
+          "retention_days": { "type": ["integer", "null"] },
+          "temporary": { "type": "boolean" },
+          "notes": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

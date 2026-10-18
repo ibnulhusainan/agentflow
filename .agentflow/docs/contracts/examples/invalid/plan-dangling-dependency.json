@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "T-20261016-002",
+  "status": "approved",
+  "created_at": "2026-10-16T09:00:00Z",
+  "approved_at": "2026-10-16T09:05:00Z",
+  "scope": ["src/**"],
+  "knowledge_refs": [],
+  "acceptance_criteria": ["AC999.1 something"],
+  "verification": ["npm test"],
+  "items": [
+    {
+      "id": "P1",
+      "title": "First",
+      "description": "does a thing",
+      "paths": ["src/a.js"],
+      "knowledge_refs": [],
+      "depends_on": ["P9"],
+      "completion_criterion": "test passes",
+      "status": "todo"
+    }
+  ]
+}

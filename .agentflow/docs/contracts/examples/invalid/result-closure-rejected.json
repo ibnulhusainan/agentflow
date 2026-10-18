@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "task_id": "T-20261016-002",
+  "status": "completed",
+  "summary": "Claimed done without running tests.",
+  "changed_files": ["src/a.js"],
+  "knowledge_refs": [],
+  "verification": {
+    "commands": [],
+    "passed": false,
+    "performed_at": "2026-10-16T09:30:00Z"
+  },
+  "acceptance_criteria": [
+    { "id": "AC1.1", "met": false, "evidence": "not verified" }
+  ],
+  "limitations": [],
+  "completed_at": "2026-10-16T09:30:00Z"
+}

@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "task_id": "T-20261016-001",
+  "plan_ref": "plan.json",
+  "updated_at": "2026-10-16T09:20:00Z",
+  "items": {
+    "P1": { "status": "done", "attempts": 1, "evidence": "node --test lib/fsutil.test.mjs → pass", "updated_at": "2026-10-16T09:18:00Z" },
+    "P2": { "status": "in_progress", "attempts": 1, "updated_at": "2026-10-16T09:20:00Z" }
+  },
+  "next_action": {
+    "item_id": "P2",
+    "action": "Add --dry-run parsing in cli.mjs and pass dryRun to all write helpers; verify with a temp repo.",
+    "blocked_by": []
+  }
+}

@@ -1,0 +1,40 @@
+{
+  // OpenCode V2 adapter configuration for the agentflow workflow.
+  // Source: https://opencode.ai/v2/docs/config and https://opencode.ai/v2/docs/permissions
+  //
+  // Copy to your project as `opencode.jsonc` (or `.opencode/opencode.jsonc`),
+  // and copy `agents/` and `commands/` into `.opencode/`.
+  //
+  // Commands are defined as files in `commands/` (copied to
+  // `.opencode/commands/`) rather than here, so they can use shell blocks
+  // (`!` + backticks) to call the workflow core.
+  "$schema": "https://opencode.ai/config.json",
+
+  // Default to the Conductor; users can switch primary agents natively.
+  "default_agent": "conductor",
+
+  // While agentflow is installed, the built-in Build/Plan agents are hidden
+  // from the picker to avoid accidental bypass of the workflow. They reappear
+  // automatically once agentflow (and this config) is removed.
+  "agents": {
+    "build": { "hidden": true },
+    "plan": { "hidden": true }
+  },
+
+  // Guard rails shared by all agents. `permission` is a map of tool key ->
+  // action; when several patterns match one key, the LAST matching pattern wins,
+  // so the broad `*` rule must come first.
+  "permission": {
+    "bash": {
+      "*": "ask",
+      "git status *": "allow",
+      "git diff *": "allow",
+      "node .agentflow/cli.mjs *": "allow",
+      "git push *": "deny",
+      "rm -rf *": "deny"
+    },
+    "read": {
+      "*.env": "deny"
+    }
+  }
+}

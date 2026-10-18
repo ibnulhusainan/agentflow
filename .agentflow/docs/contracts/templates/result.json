@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "task_id": "T-yyyymmdd-nnn",
+  "status": "completed",
+  "summary": "<what was done and why it is correct>",
+  "changed_files": ["<path>"],
+  "knowledge_refs": [],
+  "verification": {
+    "commands": [
+      { "cmd": "<command>", "exit_code": 0, "result": "pass", "output_summary": "<short>" }
+    ],
+    "passed": true,
+    "performed_at": "<ISO-8601 UTC>"
+  },
+  "acceptance_criteria": [
+    { "id": "AC1.1", "met": true, "evidence": "<file/command reference>" }
+  ],
+  "limitations": [],
+  "follow_ups": [],
+  "completed_at": "<ISO-8601 UTC>"
+}

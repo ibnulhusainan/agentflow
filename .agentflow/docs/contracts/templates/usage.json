@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "usage",
+  "task_id": "T-20261016-001",
+  "updated_at": "2026-10-16T12:00:00Z",
+  "items": [
+    {
+      "item_id": "P1",
+      "requests": 4,
+      "input_tokens": 9200,
+      "output_tokens": 3100,
+      "cache_read_tokens": 41000,
+      "note": "recorded at item completion via `usage add`"
+    },
+    {
+      "item_id": "P2",
+      "requests": 6,
+      "input_tokens": 15400,
+      "output_tokens": 4800,
+      "cache_read_tokens": 58000,
+      "note": null
+    }
+  ],
+  "totals": {
+    "requests": 10,
+    "input_tokens": 24600,
+    "output_tokens": 7900,
+    "cache_read_tokens": 99000
+  }
+}

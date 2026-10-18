@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "kind": "facts",
+  "id": "k-repo-structure",
+  "generated_at": "<ISO-8601 UTC>",
+  "generator": "<tool name>",
+  "source_revision": { "git_commit": null, "content_hash": "sha256:<hash>" },
+  "scope": ["<glob>"],
+  "data": {
+    "top_level": [],
+    "modules": [],
+    "manifests": []
+  }
+}

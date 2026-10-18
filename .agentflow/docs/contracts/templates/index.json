@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "generated_at": "<ISO-8601 UTC>",
+  "entries": [
+    {
+      "id": "k-repo-structure",
+      "path": ".agent/knowledge/facts/repo.json",
+      "type": "facts",
+      "scope": ["<glob>"],
+      "depends_on": [],
+      "owner": "analyzer",
+      "revision": { "git_commit": null, "content_hash": "sha256:<hash>" },
+      "status": "fresh",
+      "last_validated": "<ISO-8601 UTC>",
+      "summary": "<short>"
+    }
+  ]
+}

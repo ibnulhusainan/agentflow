@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "T-yyyymmdd-nnn",
+  "reopened_from": null,
+  "status": "pending",
+  "size": "small",
+  "plan_required": false,
+  "created_at": "<ISO-8601 UTC>",
+  "updated_at": "<ISO-8601 UTC>",
+  "history": [
+    { "at": "<ISO-8601 UTC>", "from": null, "to": "pending", "by": "conductor", "note": "task created" }
+  ],
+  "counters": {
+    "attempts_total": 0,
+    "max_attempts": 3,
+    "spawn_depth": 0,
+    "max_spawn_depth": 1,
+    "children": 0,
+    "max_children": 0
+  },
+  "verification": { "required": true, "passed": null },
+  "closure_check": { "last_checked": null, "passed": false, "reasons": [] }
+}

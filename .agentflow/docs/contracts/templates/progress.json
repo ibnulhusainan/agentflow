@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "task_id": "T-yyyymmdd-nnn",
+  "plan_ref": "plan.json",
+  "updated_at": "<ISO-8601 UTC>",
+  "items": {
+    "P1": { "status": "todo", "attempts": 0, "updated_at": "<ISO-8601 UTC>" }
+  },
+  "next_action": {
+    "item_id": "P1",
+    "action": "<concrete, self-contained next step>",
+    "blocked_by": []
+  }
+}

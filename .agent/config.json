@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "state_root": ".agent",
+  "small_task": {
+    "max_files": 3,
+    "max_changed_lines": 200,
+    "forbid_cross_module": true,
+    "forbid_contract_change": true
+  },
+  "limits": {
+    "max_attempts": 3,
+    "max_spawn_depth": 1,
+    "max_children": 0
+  },
+  "verify": { "commands": [] },
+  "exclude": [
+    "node_modules/**",
+    ".git/**",
+    ".agent/**",
+    ".agentflow/**",
+    ".agentflow-backup/**",
+    ".opencode/**",
+    ".cursor/**",
+    "opencode.jsonc"
+  ]
+}

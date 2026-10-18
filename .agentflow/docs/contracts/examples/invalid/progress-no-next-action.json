@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "task_id": "T-20261016-002",
+  "updated_at": "2026-10-16T09:20:00Z",
+  "items": {
+    "P1": { "status": "in_progress", "attempts": 1, "updated_at": "2026-10-16T09:20:00Z" }
+  }
+}

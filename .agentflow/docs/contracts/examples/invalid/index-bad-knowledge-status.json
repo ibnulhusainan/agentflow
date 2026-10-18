@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-16T09:10:00Z",
+  "entries": [
+    {
+      "id": "k-repo",
+      "path": ".agent/knowledge/facts/repo.json",
+      "type": "facts",
+      "scope": ["tools/**"],
+      "depends_on": [],
+      "owner": "analyzer",
+      "revision": { "git_commit": null, "content_hash": "sha256:x" },
+      "status": "ok",
+      "last_validated": "2026-10-16T09:10:00Z"
+    }
+  ]
+}

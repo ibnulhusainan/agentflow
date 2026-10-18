@@ -1,0 +1,7 @@
+# Installer backups (never commit)
+.agentflow-backup/
+
+# Local scratch
+node_modules/
+*.log
+.DS_Store

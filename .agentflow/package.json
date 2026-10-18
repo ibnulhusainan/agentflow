@@ -1,0 +1,16 @@
+{
+  "name": "agentflow",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Platform-independent workflow core for the cross-platform AI agent workflow.",
+  "bin": {
+    "agentflow": "cli.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\""
+  }
+}

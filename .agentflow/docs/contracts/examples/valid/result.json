@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task_id": "T-20261016-001",
+  "status": "completed",
+  "summary": "Added --dry-run to the agentflow CLI. Writers accept a dryRun flag and print intended paths without touching disk.",
+  "changed_files": [".agentflow/cli.mjs", ".agentflow/lib/fsutil.mjs"],
+  "knowledge_refs": [".agent/knowledge/notes/n-cli.md#Verified facts"],
+  "verification": {
+    "commands": [
+      { "cmd": "node --test .agentflow/test", "exit_code": 0, "result": "pass", "output_summary": "24 tests passed" }
+    ],
+    "passed": true,
+    "performed_at": "2026-10-16T10:00:00Z"
+  },
+  "acceptance_criteria": [
+    { "id": "AC1.1", "met": true, "evidence": "cli d ry-run test prints 2 paths, exit 0" },
+    { "id": "AC1.2", "met": true, "evidence": "test asserts .agent/ mtime unchanged in dry-run" }
+  ],
+  "limitations": ["dry-run does not simulate external side effects (network, git push)"],
+  "follow_ups": ["add --dry-run to init command"],
+  "completed_at": "2026-10-16T10:00:00Z"
+}

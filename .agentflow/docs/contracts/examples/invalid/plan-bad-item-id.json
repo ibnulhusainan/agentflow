@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task_id": "T-20261016-002",
+  "status": "draft",
+  "created_at": "2026-10-16T09:00:00Z",
+  "approved_at": null,
+  "scope": ["src/**"],
+  "knowledge_refs": [],
+  "acceptance_criteria": ["AC1.1"],
+  "verification": ["npm test"],
+  "items": [
+    {
+      "id": "item-1",
+      "title": "Bad id format",
+      "description": "id must match ^P[0-9]+",
+      "paths": ["src/a.js"],
+      "knowledge_refs": [],
+      "depends_on": [],
+      "completion_criterion": "test passes",
+      "status": "todo"
+    }
+  ]
+}

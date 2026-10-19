@@ -121,8 +121,14 @@ export function configPath(root) {
 
 export function loadConfig(root) {
   const r = readJson(configPath(root));
-  const user = r.ok && r.value && typeof r.value === "object" ? r.value : {};
   const warnings = [];
-  if (!r.ok && r.error === "parse") warnings.push("config.json is malformed; using defaults");
-  return { config: deepMerge(DEFAULTS, user), warnings };
+  if (!r.ok && r.error === "parse") {
+    // Hard error: do NOT silently fall back to defaults, because that would
+    // discard verify.commands, knowledge scope, budget, etc. without the user
+    // noticing. Caller must surface this and stop.
+    return { ok: false, config: null, warnings: ["config.json is malformed; refusing to use defaults"], error: "config.json is malformed" };
+  }
+  const user = r.ok && r.value && typeof r.value === "object" ? r.value : {};
+  if (!r.ok) warnings.push("config.json is missing; using defaults");
+  return { ok: true, config: deepMerge(DEFAULTS, user), warnings };
 }

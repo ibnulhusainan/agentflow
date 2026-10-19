@@ -2,7 +2,7 @@
 import path from "node:path";
 import { mkdirSync, readdirSync } from "node:fs";
 import { exists, readJson, writeJsonAtomic, writeTextAtomic as writeFileAtomic } from "./lib/fsutil.mjs";
-import { loadConfig, stateRoot } from "./lib/config.mjs";
+import { loadConfig, stateRoot, configPath } from "./lib/config.mjs";
 import { taskDir } from "./lib/task.mjs";
 import { isRepo, changedFiles, workingTreeChanges } from "./lib/git.mjs";
 import { classifyIndex } from "./lib/freshness.mjs";
@@ -143,7 +143,11 @@ export function run(argv, deps = {}) {
   const root = resolveRoot(flags);
   const json = !!flags.json;
   const cmd = positional[0];
-  const { config, warnings } = loadConfig(root);
+  const { config, warnings, ok: configOk, error: configError } = loadConfig(root);
+  if (!configOk) {
+    emit({ ok: false, error: configError, path: configPath(root), warnings }, json);
+    return 2;
+  }
   const needSchema = () => {
     const s = loadSchema(root);
     return s.ok ? s.schema : null;

@@ -10,10 +10,10 @@
 #   ./install.sh [TARGET_DIR] [options]
 #
 #   # one-liner (pin a tag; never install from a moving branch)
-#   curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.1.0/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.1.1/install.sh | bash
 #
 #   # target another directory
-#   curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.1.0/install.sh | bash -s -- /path/to/project
+#   curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.1.1/install.sh | bash -s -- /path/to/project
 #
 #   # or explicitly from a branch (not recommended)
 #   curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/main/install.sh | bash -s -- --ref main
@@ -27,7 +27,7 @@
 #       --remote <url>                     set origin URL non-interactively
 #       --commit                           create an initial commit after git init (default: yes)
 #       --no-commit                        do not commit (knowledge reads as stale until you commit)
-#       --ref <git-ref>                    release/branch/commit to fetch (default: v1.1.0, i.e. this script's own release)
+#       --ref <git-ref>                    release/branch/commit to fetch (default: v1.1.1, i.e. this script's own release)
 #       --repo <owner/name>                source repo (default: ibnulhusainan/agentflow)
 #       --mirror <url>                     tarball base URL (default: GitHub codeload)
 #       --dry-run                          show what would happen, change nothing
@@ -46,7 +46,7 @@ set -euo pipefail
 # AGENTFLOW_REF/REPO are read before argument parsing so flags override env.
 AGENTFLOW_REF="${AGENTFLOW_REF:-}"
 AGENTFLOW_REPO="${AGENTFLOW_REPO:-ibnulhusainan/agentflow}"
-AGENTFLOW_VERSION="${AGENTFLOW_VERSION:-v1.1.0}"
+AGENTFLOW_VERSION="${AGENTFLOW_VERSION:-v1.1.1}"
 
 # `BASH_SOURCE[0]` is unset when the script is piped (`curl ... | bash`): $0 is
 # then "bash", which is not a readable file. That is the signal for remote mode —
@@ -259,7 +259,7 @@ else
   ok "agentflow source: $SELF_DIR (local checkout)"
   case "$REF" in
     main|master|HEAD)
-      warn "REF is a moving branch ($REF) — pin a tag (e.g. --ref v1.1.0) for reproducible installs" ;;
+      warn "REF is a moving branch ($REF) — pin a tag (e.g. --ref v1.1.1) for reproducible installs" ;;
   esac
 fi
 

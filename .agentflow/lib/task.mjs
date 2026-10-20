@@ -75,6 +75,11 @@ export function listTasks(root, config) {
 export function currentTaskId(root, config) {
   const tasks = listTasks(root, config);
   if (tasks.length === 0) return null;
+  // Allow a session to pin its current task via env, so parallel/multi-tool
+  // workflows don't resolve to "most recently updated" (which may be another
+  // agent's task). Usage: AGENTFLOW_TASK=T-20261020-001 opencode
+  const pinned = process.env.AGENTFLOW_TASK || process.env.AGENTFLOW_CURRENT_TASK;
+  if (pinned && tasks.some((t) => t.task_id === pinned)) return pinned;
   const open = tasks.filter((t) => t.status !== "completed");
   const pool = open.length > 0 ? open : tasks;
   const key = (t) => t.updated_at || t.created_at || "";

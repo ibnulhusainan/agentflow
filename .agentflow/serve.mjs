@@ -79,10 +79,51 @@ export function runServe(root, flags = {}) {
       return send(res, 200, HTML, "text/html");
     }
 
+    if (pathname === "/api/file") {
+      const rel = url.searchParams.get("path") || "";
+      // restrict to .agent/ for safety
+      const normalized = path.normalize(rel).replace(/^\/+/, "");
+      if (!normalized.startsWith(".agent/") && !normalized.startsWith(".agent\\\\")) {
+        return send(res, 403, { ok: false, error: "path not allowed" });
+      }
+      const full = path.join(root, normalized);
+      if (!fs.existsSync(full)) return send(res, 404, { ok: false, error: "not found" });
+      try {
+        const content = fs.readFileSync(full, "utf8");
+        return send(res, 200, { ok: true, path: normalized, content });
+      } catch (e) {
+        return send(res, 500, { ok: false, error: String(e.message || e) });
+      }
+    }
+
     if (pathname.startsWith("/api/task/")) {
       const id = decodeURIComponent(pathname.slice("/api/task/".length));
       if (!id) return send(res, 400, { ok: false, error: "missing id" });
-      return send(res, 200, runCli(["context", "--task", id]));
+      const ctx = runCli(["context", "--task", id]);
+      // attach full plan/progress items for the viewer
+      try {
+        const plan = safeReadJson(path.join(root, ".agent", "tasks", id, "plan.json"));
+        const prog = safeReadJson(path.join(root, ".agent", "tasks", id, "progress.json"));
+        const progItems = (prog && prog.items) || {};
+        if (plan && Array.isArray(plan.items)) {
+          ctx.items = plan.items.map((it) => {
+            const p = progItems[it.id] || {};
+            return {
+              id: it.id,
+              title: it.title,
+              description: it.description || "",
+              status: p.status || it.status || "todo",
+              paths: it.paths || [],
+              depends_on: it.depends_on || [],
+              completion_criterion: it.completion_criterion || "",
+              knowledge_refs: it.knowledge_refs || [],
+            };
+          });
+        }
+      } catch (e) {
+        ctx.items = [];
+      }
+      return send(res, 200, ctx);
     }
 
     if (routes[pathname]) {

@@ -5,3 +5,6 @@
 node_modules/
 *.log
 .DS_Store
+
+# Installed project state (never commit)
+.agent/

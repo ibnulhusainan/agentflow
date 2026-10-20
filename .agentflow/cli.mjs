@@ -12,6 +12,7 @@ import { addUsage, checkUsage } from "./lib/usage.mjs";
 import { generateFactsAll, registerFactEntries, FACT_KINDS } from "./lib/facts.mjs";
 import { emit } from "./lib/output.mjs";
 import { modelsCommand } from "./lib/models.mjs";
+import { runServe } from "./serve.mjs";
 
 const BOOLEANS = new Set(["json", "dry-run", "cross-module", "contract-change", "register", "help"]);
 
@@ -134,6 +135,7 @@ function usage() {
       "usage check --task <id> [--item <P>] [--json]",
       "models show|check|next|set|apply [--role <r>] [--model <id>] [--reason <text>] [--json]",
       "init [--json]",
+      "serve [--port <n>] [--host <h>] [--root <dir>]",
     ],
   };
 }
@@ -675,6 +677,13 @@ export function run(argv, deps = {}) {
     case "models": {
       // Models chain command (manual fallback, phase 1).
       return modelsCommand(root, config, { ...flags, sub: positional[1] || "show" }, json, { emit, currentTaskId });
+    }
+
+    case "serve": {
+      // Read-only web viewer. Keeps running until Ctrl+C.
+      runServe(root, flags);
+      // keep process alive
+      return 0;
     }
 
     default:

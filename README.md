@@ -48,13 +48,13 @@ Knowledge is split into two layers:
 Run from inside the project you want to set up:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.1.1/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.2.0/install.sh | bash
 ```
 
 Or target another directory:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.1.1/install.sh | bash -s -- /path/to/project
+curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.2.0/install.sh | bash -s -- /path/to/project
 ```
 
 Install from a pinned tag, not a moving branch. The installer copies the core and adapters,
@@ -79,7 +79,7 @@ files are backed up to `.agentflow-backup/<timestamp>/`.
 Update an existing install (note `bash -s --`):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.1.1/install.sh | bash -s -- -u /path/to/project
+curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.2.0/install.sh | bash -s -- -u /path/to/project
 ```
 
 ## Setup
@@ -238,7 +238,7 @@ Analyzer, Planner and Executor yourself in separate sessions.
 ## Models (fallback chains)
 
 Per-role model chains live in `.agent/models.json`, with pointers in `.agent/models.state.json`.
-Fallback is **manual**; automatic retry on provider errors is not implemented in v1.1.1.
+Fallback is **manual**; automatic retry on provider errors is not implemented in v1.2.0.
 
 ```bash
 node .agentflow/cli.mjs models show                                   # chains and pointers
@@ -274,10 +274,23 @@ Only role-edit boundaries differ.
 - **Git is assumed.** Without it, change detection falls back to mtime + content hash.
 - **Knowledge reads as stale until the workflow state is committed.**
 
+## Web viewer (read-only)
+
+A parsed, browser-based viewer for `.agent/` state (tasks, models, knowledge, history).
+It never writes; it only reads and shells out to the core CLI.
+
+```bash
+agentflow serve                       # tries ports 3773, 3737, 3377, 7337, 7373, 7733
+agentflow serve --port 3773
+agentflow serve --host 0.0.0.0 --port 3773
+```
+
+Open the printed URL. Pages: Dashboard, Models, Knowledge, History (completed tasks, newest first).
+
 ## CLI reference
 
 `status`, `facts`, `classify`, `task new|list|current`, `validate`, `transition`, `close`,
-`attempt`, `spawn`, `discrepancy add`, `usage add|check`, `context`, `init`,
+`attempt`, `spawn`, `discrepancy add`, `usage add|check`, `context`, `init`, `serve`,
 `models show|check|next|set|apply`.
 
 Full reference: [`.agentflow/README.md`](.agentflow/README.md). Also:

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# agentflow — project-local wrapper for the workflow core CLI.
+# Usage: ./agentflow <command> [options]
+exec node "$(dirname "$0")/.agentflow/cli.mjs" "$@"

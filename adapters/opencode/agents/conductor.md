@@ -37,6 +37,12 @@ Responsibilities:
 Hard rules:
 - Do not implement code yourself.
 - Do not bypass a deterministic gate.
+- **Autonomous task routing:** when several tasks are open, always pass the
+  explicit task id (`--task <id>`) to every core command and to spawned roles;
+  never rely on `--task current` in parallel work. Pin the id in your delegation.
+- **Overlap guard:** before spawning parallel executors, verify plan `paths` are
+  disjoint across tasks; if they overlap, serialise or split shared files into a
+  prerequisite task first.
 - Stop and ask the user at approval boundaries (architecture change, schema or
   contract change, scope change, destructive/external operation, unmet
   acceptance criteria). Report the decision, the options, and your

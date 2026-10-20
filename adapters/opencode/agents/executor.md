@@ -35,7 +35,8 @@ Hard rules:
 - Respect retry limits (`node .agentflow/cli.mjs attempt`) and do not spawn
   subagents beyond the configured limit.
 
-Before closing, run `node .agentflow/cli.mjs close --task current --json`.
+Before closing, run `node .agentflow/cli.mjs close --task <id> --json` (use the
+explicit task id you were given; fall back to `current` only when running alone).
 
 Working without a Conductor is fine: find the task with `task current` (or
 `task list` when several are open) instead of waiting to be handed an ID, and

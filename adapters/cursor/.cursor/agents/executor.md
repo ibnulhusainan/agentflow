@@ -24,6 +24,8 @@ Responsibilities:
 
 Hard rules:
 - Do not edit knowledge under `.agent/knowledge/`, and do not edit the plan.
+- Use the explicit task id given to you (`--task <id>`); only fall back to
+  `current` when running alone.
 - Do not silently expand scope or change approved architecture.
 - Do not proceed past a `blocker` discrepancy.
 - Respect retry limits (`node .agentflow/cli.mjs attempt`) and do not spawn

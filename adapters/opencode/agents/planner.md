@@ -29,6 +29,10 @@ Hard rules:
 - Do not silently expand scope. Keep the plan concise and reference knowledge
   instead of restating it.
 - Dependencies must reference existing item IDs and be acyclic.
+- **Overlap guard (autonomous):** before finalizing a plan, check `paths` against
+  other open tasks (`task list`). If any file overlaps, either (a) split the
+  shared files into a prerequisite task that runs first, or (b) serialise the
+  tasks. Never leave overlapping paths across parallel tasks. Report the decision.
 - The task record belongs to the **core**, not to the Conductor role. If
   `state.json` is missing, create it yourself with one command and carry on:
   `node .agentflow/cli.mjs task new --request "<request>" --files <n>`.

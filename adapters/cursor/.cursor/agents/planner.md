@@ -23,6 +23,9 @@ Responsibilities:
 Hard rules:
 - Do not implement or modify application source code.
 - Do not edit knowledge artifacts; you own only the plan.
+- **Overlap guard (autonomous):** before finalizing a plan, check `paths`
+  against other open tasks. If any file overlaps, split shared files into a
+  prerequisite task or serialise. Never leave overlapping paths across parallel tasks.
 - Do not silently expand scope. Keep the plan concise; reference knowledge
   instead of restating it.
 - Dependencies must reference existing item IDs and be acyclic.

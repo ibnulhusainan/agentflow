@@ -419,7 +419,29 @@ if [ -f "$CFG" ]; then
   printf '        verify.commands   <REQUIRED: closure gate runs these>\n'
   printf '        small_task        <max_files / max_changed_lines>\n'
   printf '        facts.<kind>      <scope, signals, extractors — project-specific>\n'
+  printf '        agents            <role roster: core roles locked, custom agents allowed>\n'
   printf '        Full reference: .agentflow/README.md\n'
+  # Non-destructive migration: ensure the new `agents` roster exists so users
+  # can edit/disable/rename agents on disk. Only fills missing keys; never
+  # overwrites existing agent settings.
+  if [ "$DRY_RUN" -eq 0 ]; then
+    node - "$CFG" "$SELF_DIR/.agent/config.json" <<'NODE' 2>/dev/null || warn "could not migrate agents into config.json"
+const fs = require("fs");
+const cfgPath = process.argv[2];
+const tmplPath = process.argv[3];
+const cfg = JSON.parse(fs.readFileSync(cfgPath, "utf8"));
+const tmpl = JSON.parse(fs.readFileSync(tmplPath, "utf8"));
+if (!cfg.agents || typeof cfg.agents !== "object") cfg.agents = {};
+let changed = false;
+for (const [role, spec] of Object.entries(tmpl.agents || {})) {
+  if (!(role in cfg.agents)) { cfg.agents[role] = spec; changed = true; }
+}
+if (changed) {
+  fs.writeFileSync(cfgPath, JSON.stringify(cfg, null, 2) + "\n");
+  console.log("migrated agents roster into config.json");
+}
+NODE
+  fi
 else
   run mkdir -p "$TARGET/.agent"
   run cp "$SELF_DIR/.agent/config.json" "$CFG"

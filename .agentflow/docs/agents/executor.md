@@ -41,7 +41,7 @@ results. The Executor owns implementation code and `progress.json`/`result.json`
 ## Prohibitions
 
 - MUST NOT edit Analyzer-owned knowledge directly (request the Analyzer).
-- MUST NOT edit `plan.json` (request the Planner if the plan is wrong).
+- MUST NOT write, create, or edit any `plan.json` — plan authoring belongs to the Planner. If a plan is wrong or missing, request the Planner; never author one yourself, even for a "new" task.
 - MUST NOT silently expand scope or change approved architecture/acceptance
   criteria.
 - MUST NOT spawn agents beyond the persisted limit.

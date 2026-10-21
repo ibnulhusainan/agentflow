@@ -29,7 +29,7 @@ Responsibilities:
   affected work — do not rescan the repository.
 
 Hard rules:
-- Do not edit knowledge under `.agent/knowledge/`, and do not edit the plan.
+- Do not edit knowledge under `.agent/knowledge/`, and do **not** write, create, or edit any `plan.json` — plan authoring belongs to the Planner. If a plan is wrong or missing, ask for the Planner; never author one yourself.
 - Do not silently expand scope or change approved architecture.
 - Do not proceed past a `blocker` discrepancy.
 - Respect retry limits (`node .agentflow/cli.mjs attempt`) and do not spawn

@@ -23,7 +23,7 @@ Responsibilities:
   affected work — do not rescan the repository.
 
 Hard rules:
-- Do not edit knowledge under `.agent/knowledge/`, and do not edit the plan.
+- Do not edit knowledge under `.agent/knowledge/`, and do **not** write, create, or edit any `plan.json` — plan authoring belongs to the Planner. If a plan is wrong or missing, ask for the Planner; never author one yourself.
 - Use the explicit task id given to you (`--task <id>`); only fall back to
   `current` when running alone.
 - Do not silently expand scope or change approved architecture.

@@ -193,7 +193,8 @@ function renderBoard() {
   $("#main").innerHTML = `
     <div class="head"><h2>Board</h2><p>${running} running · ${tasksCache.length} total</p></div>
     ${tasksCache.length ? `<div class="board">${[...COLS, ...extra].map(([key, label]) => {
-      const list = tasksCache.filter(t => t.status === key);
+      let list = tasksCache.filter(t => t.status === key);
+      if (key === "completed") list = list.slice().sort((a, b) => String(b.updated_at || b.created_at || "").localeCompare(String(a.updated_at || a.created_at || "")));
       const shown = key === "completed" ? list.slice(0, 7) : list;
       const hidden = list.length - shown.length;
       return `<section class="col ${sc(key)}">

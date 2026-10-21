@@ -58,6 +58,14 @@ function resolveRoot(flags) {
   return path.resolve(flags.root || process.env.AGENTFLOW_ROOT || process.cwd());
 }
 
+function roleAgent(config, role) {
+  const spec = config?.agents?.[role];
+  if (!spec) return { ok: false, agent: role, reason: `role missing: ${role}` };
+  if (spec.enabled !== true) return { ok: false, agent: spec.agent || role, reason: `role disabled: ${role}` };
+  return { ok: true, agent: spec.agent || role, reason: null };
+}
+
+
 // `T-YYYYMMDD-NNN`, monotonically increasing within a day, gap-free.
 function nextTaskId(tasksBase) {
   const d = new Date();
@@ -316,7 +324,9 @@ export function run(argv, deps = {}) {
             status: state.status,
             size,
             plan_required: planRequired,
-            next: planRequired ? "planner" : "executor",
+            next: (planRequired ? roleAgent(config, "planner") : roleAgent(config, "executor")).agent,
+            next_role: planRequired ? "planner" : "executor",
+            next_ok: (planRequired ? roleAgent(config, "planner") : roleAgent(config, "executor")).ok,
           },
           json
         );
@@ -335,7 +345,8 @@ export function run(argv, deps = {}) {
           return 1;
         }
         const state = loadTask(root, config, id).state.value;
-        emit({ ok: true, task_id: id, status: state.status, plan_required: state.plan_required, next_action: state.plan_required ? "planner" : "executor" }, json);
+        const r = state.plan_required ? roleAgent(config, "planner") : roleAgent(config, "executor");
+        emit({ ok: true, task_id: id, status: state.status, plan_required: state.plan_required, next_action: r.agent, next_role: state.plan_required ? "planner" : "executor", next_ok: r.ok, next_reason: r.reason }, json);
         return 0;
       }
 
@@ -677,6 +688,68 @@ export function run(argv, deps = {}) {
     case "models": {
       // Models chain command (manual fallback, phase 1).
       return modelsCommand(root, config, { ...flags, sub: positional[1] || "show" }, json, { emit, currentTaskId });
+    }
+
+    case "agent": {
+      // Agent roster management (read-only queries; edits happen in config.json).
+      const sub = positional[1] || "list";
+      const agents = config.agents || {};
+      const roles = Object.keys(agents).sort((a, b) => (agents[a].order ?? 0) - (agents[b].order ?? 0));
+      if (sub === "list") {
+        const list = roles.map((role) => {
+          const a = agents[role] || {};
+          const agentName = a.agent || role;
+          // resolve file path by convention
+          const opencodePath = path.join(root, ".opencode", "agents", `${agentName}.md`);
+          const cursorPath = path.join(root, ".cursor", "agents", `${agentName}.md`);
+          return {
+            role,
+            agent: agentName,
+            order: a.order ?? null,
+            enabled: a.enabled === true,
+            opencode_exists: exists(opencodePath),
+            cursor_exists: exists(cursorPath),
+          };
+        });
+        emit({ ok: true, count: list.length, agents: list }, json);
+        return 0;
+      }
+      if (sub === "check") {
+        const name = positional[2] || flags.name || flags.agent;
+        if (!name) {
+          emit({ ok: false, error: "missing agent/role name" }, json);
+          return 2;
+        }
+        // accept role or agent name
+        let role = name;
+        if (!(role in agents)) {
+          // try find by agent name
+          const found = Object.keys(agents).find((r) => agents[r].agent === name);
+          if (found) role = found;
+        }
+        const spec = agents[role];
+        if (!spec) {
+          emit({ ok: false, error: `unknown agent/role: ${name}` }, json);
+          return 2;
+        }
+        const agentName = spec.agent || role;
+        const opencodePath = path.join(root, ".opencode", "agents", `${agentName}.md`);
+        const cursorPath = path.join(root, ".cursor", "agents", `${agentName}.md`);
+        const fileExists = exists(opencodePath) || exists(cursorPath);
+        const enabled = spec.enabled === true;
+        if (!enabled) {
+          emit({ ok: false, error: `agent disabled: ${name}`, role, agent: agentName, enabled: false }, json);
+          return 2;
+        }
+        if (!fileExists) {
+          emit({ ok: false, error: `agent file missing: ${agentName}.md`, role, agent: agentName, enabled: true }, json);
+          return 2;
+        }
+        emit({ ok: true, role, agent: agentName, enabled: true, path: exists(opencodePath) ? opencodePath : cursorPath }, json);
+        return 0;
+      }
+      emit({ ok: false, error: `unknown agent subcommand: ${sub}` }, json);
+      return 2;
     }
 
     case "serve": {

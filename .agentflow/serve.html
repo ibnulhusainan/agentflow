@@ -143,6 +143,7 @@
     <button class="tab" data-view="models">Models</button>
     <button class="tab" data-view="knowledge">Knowledge</button>
     <button class="tab" data-view="history">History</button>
+    <button class="tab" data-view="agents">Agents</button>
   </nav>
   <div class="sync" id="sync"><span class="dot"></span><span id="sync-text">connecting…</span></div>
 </header>
@@ -367,6 +368,16 @@ async function renderKnowledge() {
   $("#main").innerHTML = `<div class="head"><h2>Knowledge</h2></div>${body}`;
 }
 
+async function renderAgents() {
+  const cfg = await api("/api/config");
+  const agents = (cfg && cfg.agents) || {};
+  const list = Object.keys(agents).map(k => ({ role: k, ...agents[k] })).sort((a,b) => (a.order??0)-(b.order??0));
+  $("#main").innerHTML = `<div class="head"><h2>Agents</h2><p>${list.length} configured · ${list.filter(a=>a.enabled).length} enabled</p></div>` +
+    (list.length ? `<div class="panel"><table class="tbl"><thead><tr><th>Order</th><th>Role</th><th>Agent</th><th>Enabled</th></tr></thead><tbody>` +
+      list.map(a => `<tr><td>${esc(a.order)}</td><td class="mono">${esc(a.role)}</td><td class="mono">${esc(a.agent)}</td><td>${a.enabled ? "✓" : "—"}</td></tr>`).join("") +
+      `</tbody></table></div>` : '<div class="empty">No agents configured</div>');
+}
+
 async function renderHistory() {
   const d = await api("/api/history");
   const tasks = d.tasks || [];
@@ -386,6 +397,7 @@ async function switchView(view) {
     else if (view === "models") await renderModels();
     else if (view === "knowledge") await renderKnowledge();
     else if (view === "history") await renderHistory();
+    else if (view === "agents") await renderAgents();
   } catch (e) {
     $("#main").innerHTML = `<div class="head"><h2>Error</h2></div><pre>${esc(e.message || e)}</pre>`;
   }

@@ -78,3 +78,34 @@ blockers: none
 Prefer handing off with `context --task <id> [--item <P>]`, which returns the
 same fields (status, `next_action`, plan item, counters, blockers, budget) in
 one payload; the file paths above remain the authoritative sources it reads.
+
+## Custom agents
+
+Core roles (consultant, conductor, analyzer, planner, executor, reviewer) are
+**locked**: their keys must stay in `config.json` and cannot be renamed or
+removed. Only their `agent`, `enabled`, and `order` fields are editable.
+
+To add a custom agent (spawnable, not a workflow step):
+
+1. Pick a unique name, e.g. `my-reviewer`.
+2. Add an entry to `.agent/config.json` under `agents`:
+   ```json
+   "my-reviewer": { "agent": "my-reviewer", "order": 6, "enabled": true }
+   ```
+3. Create the agent file for each platform you use:
+   - OpenCode: `.opencode/agents/my-reviewer.md`
+   - Cursor: `.cursor/agents/my-reviewer.md`
+   Follow the frontmatter format of an existing agent (description, mode,
+   permission, etc.) and point its contract at the agents contracts directory if
+   applicable.
+4. Verify it is recognized: `node .agentflow/cli.mjs agent list` and
+   `node .agentflow/cli.mjs agent check my-reviewer` (exit 0 = enabled + file present).
+5. Disable without deleting: set `"enabled": false` in config. Spawn attempts
+   will then fail with a clear message.
+
+To rename an agent's display name without breaking the workflow: keep the
+role key, change only the `agent` field and rename the `.md` file to match.
+
+To rename a core role key itself (e.g. `executor` → `implementor`) is **not**
+supported — core orchestration references these keys. Use the `agent` field
+instead.

@@ -37,37 +37,5 @@
     ".opencode/**",
     ".cursor/**",
     "opencode.jsonc"
-  ],
-  "agents": {
-    "consultant": {
-      "agent": "consultant",
-      "order": 0,
-      "enabled": true
-    },
-    "conductor": {
-      "agent": "conductor",
-      "order": 1,
-      "enabled": true
-    },
-    "analyzer": {
-      "agent": "analyzer",
-      "order": 2,
-      "enabled": true
-    },
-    "planner": {
-      "agent": "planner",
-      "order": 3,
-      "enabled": true
-    },
-    "executor": {
-      "agent": "executor",
-      "order": 4,
-      "enabled": true
-    },
-    "reviewer": {
-      "agent": "reviewer",
-      "order": 5,
-      "enabled": true
-    }
-  }
+  ]
 }

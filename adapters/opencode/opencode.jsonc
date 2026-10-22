@@ -16,9 +16,17 @@
   // While agentflow is installed, the built-in Build/Plan agents are hidden
   // from the picker to avoid accidental bypass of the workflow. They reappear
   // automatically once agentflow (and this config) is removed.
+  // Agent visibility overrides: only list agents you want to change. Enabled/
+  // visible agents do not need an entry. Uncomment to tweak.
   "agents": {
-    "build": { "hidden": true },
-    "plan": { "hidden": true }
+    "build": { "disabled": true },
+    "plan": { "disabled": true },
+    // "conductor": { "hidden": true },
+    "analyzer": { "hidden": true },
+    // "consultant": { "hidden": true },
+    // "planner": { "hidden": true },
+    // "executor": { "hidden": true },
+    "reviewer": { "disabled": true }
   },
 
   // Guard rails shared by all agents. `permission` is a map of tool key ->

@@ -227,41 +227,6 @@
           "additionalProperties": {
             "type": "object"
           }
-        },
-        "agents": {
-          "type": "object",
-          "description": "Agent roster for the workflow. Core roles (consultant, conductor, analyzer, planner, executor, reviewer) are required and cannot be removed; only their agent/enabled/order fields are editable. Additional entries are custom agents (spawnable, not workflow steps).",
-          "required": [
-            "consultant",
-            "conductor",
-            "analyzer",
-            "planner",
-            "executor",
-            "reviewer"
-          ],
-          "properties": {
-            "consultant": {
-              "$ref": "#/$defs/AgentSpec"
-            },
-            "conductor": {
-              "$ref": "#/$defs/AgentSpec"
-            },
-            "analyzer": {
-              "$ref": "#/$defs/AgentSpec"
-            },
-            "planner": {
-              "$ref": "#/$defs/AgentSpec"
-            },
-            "executor": {
-              "$ref": "#/$defs/AgentSpec"
-            },
-            "reviewer": {
-              "$ref": "#/$defs/AgentSpec"
-            }
-          },
-          "additionalProperties": {
-            "$ref": "#/$defs/AgentSpec"
-          }
         }
       },
       "additionalProperties": false
@@ -1132,28 +1097,6 @@
       },
       "additionalProperties": false,
       "description": "Self-reported token/request usage per plan item; hard-checked against config.budget."
-    },
-    "AgentSpec": {
-      "type": "object",
-      "required": [
-        "agent",
-        "order",
-        "enabled"
-      ],
-      "properties": {
-        "agent": {
-          "type": "string",
-          "minLength": 1
-        },
-        "order": {
-          "type": "integer",
-          "minimum": 0
-        },
-        "enabled": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": false
     }
   }
 }

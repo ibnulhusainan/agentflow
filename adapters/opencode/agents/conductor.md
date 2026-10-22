@@ -29,7 +29,6 @@ Responsibilities:
 - Delegate to **Planner** when the created record says `plan_required: true`;
   to **Executor** directly when it says `false`.
 - Delegate to exactly one role at a time; never spawn unbounded trees.
-- Before spawning any role, check it is enabled: `node .agentflow/cli.mjs agent check <role>` (exit 0 = ok). If disabled or missing, skip and report — do not spawn.
 - Enforce lifecycle transitions with the core:
   `node .agentflow/cli.mjs transition --task <id> --to <status>`.
 - Verify closure before marking a task complete:

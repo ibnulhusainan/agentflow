@@ -48,13 +48,13 @@ Knowledge is split into two layers:
 Run from inside the project you want to set up:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.2.1/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.2.2/install.sh | bash
 ```
 
 Or target another directory:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.2.1/install.sh | bash -s -- /path/to/project
+curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.2.2/install.sh | bash -s -- /path/to/project
 ```
 
 Install from a pinned tag, not a moving branch. The installer copies the core and adapters,
@@ -79,7 +79,7 @@ files are backed up to `.agentflow-backup/<timestamp>/`.
 Update an existing install (note `bash -s --`):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.2.1/install.sh | bash -s -- -u /path/to/project
+curl -fsSL https://raw.githubusercontent.com/ibnulhusainan/agentflow/v1.2.2/install.sh | bash -s -- -u /path/to/project
 ```
 
 ## Setup
@@ -238,7 +238,7 @@ Analyzer, Planner and Executor yourself in separate sessions.
 ## Models (fallback chains)
 
 Per-role model chains live in `.agent/models.json`, with pointers in `.agent/models.state.json`.
-Fallback is **manual**; automatic retry on provider errors is not implemented in v1.2.1.
+Fallback is **manual**; automatic retry on provider errors is not implemented in v1.2.2.
 
 ```bash
 node .agentflow/cli.mjs models show                                   # chains and pointers

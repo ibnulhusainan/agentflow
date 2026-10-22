@@ -48,18 +48,6 @@ export const DEFAULTS = Object.freeze({
     // workflow installation, not the application.
     "opencode.jsonc",
   ],
-  // Agent roster. Core roles (consultant, conductor, analyzer, planner, executor,
-  // reviewer) are required and locked as keys; only agent/enabled/order are
-  // editable. Additional entries are custom agents (spawnable, not workflow
-  // steps). See docs.
-  agents: {
-    consultant: { agent: "consultant", order: 0, enabled: true },
-    conductor:  { agent: "conductor",  order: 1, enabled: true },
-    analyzer:   { agent: "analyzer",   order: 2, enabled: true },
-    planner:    { agent: "planner",    order: 3, enabled: true },
-    executor:   { agent: "executor",   order: 4, enabled: true },
-    reviewer:   { agent: "reviewer",   order: 5, enabled: true },
-  },
   medium_max_files: 15,
   // Deterministic fact generators run by `agentflow facts`. Keys are kind names
   // (see .agentflow/README.md); every kind is project-agnostic and fully
@@ -131,42 +119,6 @@ export function configPath(root) {
   return path.join(root, DEFAULTS.state_root, "config.json");
 }
 
-export const CORE_AGENT_ROLES = Object.freeze([
-  "consultant", "conductor", "analyzer", "planner", "executor", "reviewer",
-]);
-
-export function validateAgents(config) {
-  const errors = [];
-  const agents = config?.agents;
-  if (!agents || typeof agents !== "object" || Array.isArray(agents)) {
-    errors.push("agents must be an object");
-    return { ok: false, errors };
-  }
-  for (const role of CORE_AGENT_ROLES) {
-    if (!(role in agents)) errors.push(`missing core agent role: ${role}`);
-  }
-  const orders = new Set();
-  for (const [role, spec] of Object.entries(agents)) {
-    if (!spec || typeof spec !== "object" || Array.isArray(spec)) {
-      errors.push(`agent spec for ${role} must be an object`);
-      continue;
-    }
-    if (typeof spec.agent !== "string" || spec.agent.trim() === "") {
-      errors.push(`agent.agent must be a non-empty string (${role})`);
-    }
-    if (!Number.isInteger(spec.order) || spec.order < 0) {
-      errors.push(`agent.order must be a non-negative integer (${role})`);
-    } else {
-      if (orders.has(spec.order)) errors.push(`duplicate agent.order: ${spec.order}`);
-      orders.add(spec.order);
-    }
-    if (typeof spec.enabled !== "boolean") {
-      errors.push(`agent.enabled must be a boolean (${role})`);
-    }
-  }
-  return { ok: errors.length === 0, errors };
-}
-
 export function loadConfig(root) {
   const r = readJson(configPath(root));
   const warnings = [];
@@ -178,10 +130,5 @@ export function loadConfig(root) {
   }
   const user = r.ok && r.value && typeof r.value === "object" ? r.value : {};
   if (!r.ok) warnings.push("config.json is missing; using defaults");
-  const merged = deepMerge(DEFAULTS, user);
-  const v = validateAgents(merged);
-  if (!v.ok) {
-    return { ok: false, config: null, warnings: v.errors, error: `config.json invalid: ${v.errors.join("; ")}` };
-  }
-  return { ok: true, config: merged, warnings };
+  return { ok: true, config: deepMerge(DEFAULTS, user), warnings };
 }

@@ -5,6 +5,7 @@ color: "#b07be8"
 permission:
   edit:
     "*": deny
+    "**/.agent/tasks/**": allow
     ".agent/tasks/**": allow
   bash:
     "*": ask

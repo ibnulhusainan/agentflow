@@ -4,6 +4,7 @@ mode: primary
 color: "#48b06b"
 permission:
   edit:
+    "**/.agent/knowledge/**": deny
     ".agent/knowledge/**": deny
     "*plan.json": deny
   bash:

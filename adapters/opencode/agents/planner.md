@@ -3,7 +3,10 @@ description: "Planner: turn a request into a dependency-aware, testable plan in 
 mode: all
 color: "#b07be8"
 permission:
-  edit: allow
+  edit:
+    "*": deny
+    "**/.agent/**": allow
+    ".agent/**": allow
   bash:
     "*": ask
     "node .agentflow/cli.mjs *": allow
